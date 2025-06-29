@@ -1,0 +1,809 @@
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><title>ReelShort 算法逆向记录</title><style>
+/* cspell:disable-file */
+/* webkit printing magic: print all background colors */
+html {
+	-webkit-print-color-adjust: exact;
+}
+* {
+	box-sizing: border-box;
+	-webkit-print-color-adjust: exact;
+}
+
+html,
+body {
+	margin: 0;
+	padding: 0;
+}
+@media only screen {
+	body {
+		margin: 2em auto;
+		max-width: 900px;
+		color: rgb(55, 53, 47);
+	}
+}
+
+body {
+	line-height: 1.5;
+	white-space: pre-wrap;
+}
+
+a,
+a.visited {
+	color: inherit;
+	text-decoration: underline;
+}
+
+.pdf-relative-link-path {
+	font-size: 80%;
+	color: #444;
+}
+
+h1,
+h2,
+h3 {
+	letter-spacing: -0.01em;
+	line-height: 1.2;
+	font-weight: 600;
+	margin-bottom: 0;
+}
+
+.page-title {
+	font-size: 2.5rem;
+	font-weight: 700;
+	margin-top: 0;
+	margin-bottom: 0.75em;
+}
+
+h1 {
+	font-size: 1.875rem;
+	margin-top: 1.875rem;
+}
+
+h2 {
+	font-size: 1.5rem;
+	margin-top: 1.5rem;
+}
+
+h3 {
+	font-size: 1.25rem;
+	margin-top: 1.25rem;
+}
+
+.source {
+	border: 1px solid #ddd;
+	border-radius: 3px;
+	padding: 1.5em;
+	word-break: break-all;
+}
+
+.callout {
+	border-radius: 3px;
+	padding: 1rem;
+}
+
+figure {
+	margin: 1.25em 0;
+	page-break-inside: avoid;
+}
+
+figcaption {
+	opacity: 0.5;
+	font-size: 85%;
+	margin-top: 0.5em;
+}
+
+mark {
+	background-color: transparent;
+}
+
+.indented {
+	padding-left: 1.5em;
+}
+
+hr {
+	background: transparent;
+	display: block;
+	width: 100%;
+	height: 1px;
+	visibility: visible;
+	border: none;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.09);
+}
+
+img {
+	max-width: 100%;
+}
+
+@media only print {
+	img {
+		max-height: 100vh;
+		object-fit: contain;
+	}
+}
+
+@page {
+	margin: 1in;
+}
+
+.collection-content {
+	font-size: 0.875rem;
+}
+
+.column-list {
+	display: flex;
+	justify-content: space-between;
+}
+
+.column {
+	padding: 0 1em;
+}
+
+.column:first-child {
+	padding-left: 0;
+}
+
+.column:last-child {
+	padding-right: 0;
+}
+
+.table_of_contents-item {
+	display: block;
+	font-size: 0.875rem;
+	line-height: 1.3;
+	padding: 0.125rem;
+}
+
+.table_of_contents-indent-1 {
+	margin-left: 1.5rem;
+}
+
+.table_of_contents-indent-2 {
+	margin-left: 3rem;
+}
+
+.table_of_contents-indent-3 {
+	margin-left: 4.5rem;
+}
+
+.table_of_contents-link {
+	text-decoration: none;
+	opacity: 0.7;
+	border-bottom: 1px solid rgba(55, 53, 47, 0.18);
+}
+
+table,
+th,
+td {
+	border: 1px solid rgba(55, 53, 47, 0.09);
+	border-collapse: collapse;
+}
+
+table {
+	border-left: none;
+	border-right: none;
+}
+
+th,
+td {
+	font-weight: normal;
+	padding: 0.25em 0.5em;
+	line-height: 1.5;
+	min-height: 1.5em;
+	text-align: left;
+}
+
+th {
+	color: rgba(55, 53, 47, 0.6);
+}
+
+ol,
+ul {
+	margin: 0;
+	margin-block-start: 0.6em;
+	margin-block-end: 0.6em;
+}
+
+li > ol:first-child,
+li > ul:first-child {
+	margin-block-start: 0.6em;
+}
+
+ul > li {
+	list-style: disc;
+}
+
+ul.to-do-list {
+	padding-inline-start: 0;
+}
+
+ul.to-do-list > li {
+	list-style: none;
+}
+
+.to-do-children-checked {
+	text-decoration: line-through;
+	opacity: 0.375;
+}
+
+ul.toggle > li {
+	list-style: none;
+}
+
+ul {
+	padding-inline-start: 1.7em;
+}
+
+ul > li {
+	padding-left: 0.1em;
+}
+
+ol {
+	padding-inline-start: 1.6em;
+}
+
+ol > li {
+	padding-left: 0.2em;
+}
+
+.mono ol {
+	padding-inline-start: 2em;
+}
+
+.mono ol > li {
+	text-indent: -0.4em;
+}
+
+.toggle {
+	padding-inline-start: 0em;
+	list-style-type: none;
+}
+
+/* Indent toggle children */
+.toggle > li > details {
+	padding-left: 1.7em;
+}
+
+.toggle > li > details > summary {
+	margin-left: -1.1em;
+}
+
+.selected-value {
+	display: inline-block;
+	padding: 0 0.5em;
+	background: rgba(206, 205, 202, 0.5);
+	border-radius: 3px;
+	margin-right: 0.5em;
+	margin-top: 0.3em;
+	margin-bottom: 0.3em;
+	white-space: nowrap;
+}
+
+.collection-title {
+	display: inline-block;
+	margin-right: 1em;
+}
+
+.page-description {
+	margin-bottom: 2em;
+}
+
+.simple-table {
+	margin-top: 1em;
+	font-size: 0.875rem;
+	empty-cells: show;
+}
+.simple-table td {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table th {
+	height: 29px;
+	min-width: 120px;
+}
+
+.simple-table-header-color {
+	background: rgb(247, 246, 243);
+	color: black;
+}
+.simple-table-header {
+	font-weight: 500;
+}
+
+time {
+	opacity: 0.5;
+}
+
+.icon {
+	display: inline-block;
+	max-width: 1.2em;
+	max-height: 1.2em;
+	text-decoration: none;
+	vertical-align: text-bottom;
+	margin-right: 0.5em;
+}
+
+img.icon {
+	border-radius: 3px;
+}
+
+.user-icon {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: 100%;
+	margin-right: 0.5rem;
+}
+
+.user-icon-inner {
+	font-size: 0.8em;
+}
+
+.text-icon {
+	border: 1px solid #000;
+	text-align: center;
+}
+
+.page-cover-image {
+	display: block;
+	object-fit: cover;
+	width: 100%;
+	max-height: 30vh;
+}
+
+.page-header-icon {
+	font-size: 3rem;
+	margin-bottom: 1rem;
+}
+
+.page-header-icon-with-cover {
+	margin-top: -0.72em;
+	margin-left: 0.07em;
+}
+
+.page-header-icon img {
+	border-radius: 3px;
+}
+
+.link-to-page {
+	margin: 1em 0;
+	padding: 0;
+	border: none;
+	font-weight: 500;
+}
+
+p > .user {
+	opacity: 0.5;
+}
+
+td > .user,
+td > time {
+	white-space: nowrap;
+}
+
+input[type="checkbox"] {
+	transform: scale(1.5);
+	margin-right: 0.6em;
+	vertical-align: middle;
+}
+
+p {
+	margin-top: 0.5em;
+	margin-bottom: 0.5em;
+}
+
+.image {
+	border: none;
+	margin: 1.5em 0;
+	padding: 0;
+	border-radius: 0;
+	text-align: center;
+}
+
+.code,
+code {
+	background: rgba(135, 131, 120, 0.15);
+	border-radius: 3px;
+	padding: 0.2em 0.4em;
+	border-radius: 3px;
+	font-size: 85%;
+	tab-size: 2;
+}
+
+code {
+	color: #eb5757;
+}
+
+.code {
+	padding: 1.5em 1em;
+}
+
+.code-wrap {
+	white-space: pre-wrap;
+	word-break: break-all;
+}
+
+.code > code {
+	background: none;
+	padding: 0;
+	font-size: 100%;
+	color: inherit;
+}
+
+blockquote {
+	font-size: 1.25em;
+	margin: 1em 0;
+	padding-left: 1em;
+	border-left: 3px solid rgb(55, 53, 47);
+}
+
+.bookmark {
+	text-decoration: none;
+	max-height: 8em;
+	padding: 0;
+	display: flex;
+	width: 100%;
+	align-items: stretch;
+}
+
+.bookmark-title {
+	font-size: 0.85em;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	height: 1.75em;
+	white-space: nowrap;
+}
+
+.bookmark-text {
+	display: flex;
+	flex-direction: column;
+}
+
+.bookmark-info {
+	flex: 4 1 180px;
+	padding: 12px 14px 14px;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+}
+
+.bookmark-image {
+	width: 33%;
+	flex: 1 1 180px;
+	display: block;
+	position: relative;
+	object-fit: cover;
+	border-radius: 1px;
+}
+
+.bookmark-description {
+	color: rgba(55, 53, 47, 0.6);
+	font-size: 0.75em;
+	overflow: hidden;
+	max-height: 4.5em;
+	word-break: break-word;
+}
+
+.bookmark-href {
+	font-size: 0.75em;
+	margin-top: 0.25em;
+}
+
+.sans { font-family: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol"; }
+.code { font-family: "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace; }
+.serif { font-family: Lyon-Text, Georgia, ui-serif, serif; }
+.mono { font-family: iawriter-mono, Nitti, Menlo, Courier, monospace; }
+.pdf .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK JP'; }
+.pdf:lang(zh-CN) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK SC'; }
+.pdf:lang(zh-TW) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK TC'; }
+.pdf:lang(ko-KR) .sans { font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI Variable Display", "Segoe UI", Helvetica, "Apple Color Emoji", Arial, sans-serif, "Segoe UI Emoji", "Segoe UI Symbol", 'Twemoji', 'Noto Color Emoji', 'Noto Sans CJK KR'; }
+.pdf .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .code { font-family: Source Code Pro, "SFMono-Regular", Menlo, Consolas, "PT Mono", "Liberation Mono", Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.pdf .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK JP'; }
+.pdf:lang(zh-CN) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK SC'; }
+.pdf:lang(zh-TW) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK TC'; }
+.pdf:lang(ko-KR) .serif { font-family: PT Serif, Lyon-Text, Georgia, ui-serif, serif, 'Twemoji', 'Noto Color Emoji', 'Noto Serif CJK KR'; }
+.pdf .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK JP'; }
+.pdf:lang(zh-CN) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK SC'; }
+.pdf:lang(zh-TW) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK TC'; }
+.pdf:lang(ko-KR) .mono { font-family: PT Mono, iawriter-mono, Nitti, Menlo, Courier, monospace, 'Twemoji', 'Noto Color Emoji', 'Noto Sans Mono CJK KR'; }
+.highlight-default {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.highlight-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.highlight-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.highlight-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.highlight-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.highlight-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.highlight-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.highlight-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.highlight-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.highlight-default_background {
+	color: rgba(50, 48, 44, 1);
+}
+.highlight-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.highlight-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.highlight-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.highlight-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.highlight-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.highlight-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.highlight-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.highlight-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.highlight-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.block-color-default {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray {
+	color: rgba(115, 114, 110, 1);
+	fill: rgba(115, 114, 110, 1);
+}
+.block-color-brown {
+	color: rgba(159, 107, 83, 1);
+	fill: rgba(159, 107, 83, 1);
+}
+.block-color-orange {
+	color: rgba(217, 115, 13, 1);
+	fill: rgba(217, 115, 13, 1);
+}
+.block-color-yellow {
+	color: rgba(203, 145, 47, 1);
+	fill: rgba(203, 145, 47, 1);
+}
+.block-color-teal {
+	color: rgba(68, 131, 97, 1);
+	fill: rgba(68, 131, 97, 1);
+}
+.block-color-blue {
+	color: rgba(51, 126, 169, 1);
+	fill: rgba(51, 126, 169, 1);
+}
+.block-color-purple {
+	color: rgba(144, 101, 176, 1);
+	fill: rgba(144, 101, 176, 1);
+}
+.block-color-pink {
+	color: rgba(193, 76, 138, 1);
+	fill: rgba(193, 76, 138, 1);
+}
+.block-color-red {
+	color: rgba(205, 60, 58, 1);
+	fill: rgba(205, 60, 58, 1);
+}
+.block-color-default_background {
+	color: inherit;
+	fill: inherit;
+}
+.block-color-gray_background {
+	background: rgba(248, 248, 247, 1);
+}
+.block-color-brown_background {
+	background: rgba(244, 238, 238, 1);
+}
+.block-color-orange_background {
+	background: rgba(251, 236, 221, 1);
+}
+.block-color-yellow_background {
+	background: rgba(251, 243, 219, 1);
+}
+.block-color-teal_background {
+	background: rgba(237, 243, 236, 1);
+}
+.block-color-blue_background {
+	background: rgba(231, 243, 248, 1);
+}
+.block-color-purple_background {
+	background: rgba(248, 243, 252, 1);
+}
+.block-color-pink_background {
+	background: rgba(252, 241, 246, 1);
+}
+.block-color-red_background {
+	background: rgba(253, 235, 236, 1);
+}
+.select-value-color-uiBlue { background-color: undefined; }
+.select-value-color-pink { background-color: rgba(225, 136, 179, 0.27); }
+.select-value-color-purple { background-color: rgba(168, 129, 197, 0.27); }
+.select-value-color-green { background-color: rgba(123, 183, 129, 0.27); }
+.select-value-color-gray { background-color: rgba(84, 72, 49, 0.15); }
+.select-value-color-translucentGray { background-color: undefined; }
+.select-value-color-orange { background-color: rgba(224, 124, 57, 0.27); }
+.select-value-color-brown { background-color: rgba(210, 162, 141, 0.35); }
+.select-value-color-red { background-color: rgba(244, 171, 159, 0.4); }
+.select-value-color-yellow { background-color: rgba(236, 191, 66, 0.39); }
+.select-value-color-blue { background-color: rgba(93, 165, 206, 0.27); }
+.select-value-color-pageGlass { background-color: undefined; }
+.select-value-color-washGlass { background-color: undefined; }
+
+.checkbox {
+	display: inline-flex;
+	vertical-align: text-bottom;
+	width: 16;
+	height: 16;
+	background-size: 16px;
+	margin-left: 2px;
+	margin-right: 5px;
+}
+
+.checkbox-on {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20width%3D%2216%22%20height%3D%2216%22%20fill%3D%22%2358A9D7%22%2F%3E%0A%3Cpath%20d%3D%22M6.71429%2012.2852L14%204.9995L12.7143%203.71436L6.71429%209.71378L3.28571%206.2831L2%207.57092L6.71429%2012.2852Z%22%20fill%3D%22white%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+
+.checkbox-off {
+	background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg%20width%3D%2216%22%20height%3D%2216%22%20viewBox%3D%220%200%2016%2016%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%3Crect%20x%3D%220.75%22%20y%3D%220.75%22%20width%3D%2214.5%22%20height%3D%2214.5%22%20fill%3D%22white%22%20stroke%3D%22%2336352F%22%20stroke-width%3D%221.5%22%2F%3E%0A%3C%2Fsvg%3E");
+}
+	
+</style></head><body><article id="6339414b-2032-425b-bab4-a5becc7fb028" class="page sans"><header><h1 class="page-title">ReelShort 算法逆向记录</h1><p class="page-description"></p></header><div class="page-body"><p id="f9f320e0-f086-44f6-adf9-769c5c085ffc" class="">reelshort是出名的短剧出海应用。</p><p id="855aa004-9285-4f63-888a-3372d98b9fbe" class="">通过逆向获取其请求签名算法。</p><p id="3f69f339-ab14-4361-ad24-3cf1b5c80a0d" class="">apk下载地址：</p><p id="1559917b-f41e-461d-9807-87ba0e53afd6" class=""><a href="https://reelshort.en.uptodown.com/android/download/88828454">https://reelshort.en.uptodown.com/android/download/88828454</a></p><h1 id="6475feb2-197c-4249-bc71-84cae9276644" class="">函数定位&amp;分析</h1><p id="bbb81940-4281-4e7a-ada0-809f409f6002" class="">抓包导出的har文件：</p><figure id="bcbaa6e7-e353-47af-be40-a3dabcb4cfff"><div class="source"><a href="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/reelshort_api_20240801.har">reelshort_api_20240801.har</a></div></figure><p id="f617250a-e053-477b-9efd-b641f02ebccb" class="">通过抓包文件，发现有两个可疑的加密参数，一个是所有API请求时的签名参数<mark class="highlight-pink">sign</mark></p><p id="39ebae48-7868-4986-bc15-a476b743ab02" class="">另一个是在获取短剧信息时，会有一个<mark class="highlight-pink">play_info</mark>的base64加密串，可以解密获取视频的m3u8下载地址。</p><figure id="2d37d955-3697-4373-96c3-4a5cbc78b4d4" class="image"><a href="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled.png"><img style="width:720px" src="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled.png"/></a></figure><p id="9449ba47-9fd6-4531-976a-e9c0fcf6f61b" class="">函数定位：</p><p id="6cb9d9a3-1704-494c-a197-c4197c23f05b" class="">通过jadx-gui 搜索字符串 “sign” 可以定位到如下位置：</p><figure id="c7663ced-7c5c-4575-bdfb-7499ac66f123" class="image"><a href="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%201.png"><img style="width:707.984375px" src="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%201.png"/></a></figure><p id="84f53c65-0f18-41f4-841c-c0054cc33749" class="">实际上这就是签名参数sign的位置。</p><p id="113f8f14-e5a9-46b8-9b96-00f10e7dfd94" class="">直接进入SBUtil类下，可以找到加密函数的so库，以及其静态注册的native方法：</p><figure id="ebed56f9-06b0-4dbd-9c46-07666c80f47f" class="image"><a href="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%202.png"><img style="width:707.984375px" src="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%202.png"/></a></figure><p id="38c0f9b9-6cec-4adb-b00c-082b37692b07" class="">通过 frida-hook 注入脚本，参考：</p><p id="daccff64-7624-45ad-aade-ea23b6e0dcde" class="">通过函数hook，发现 sign 为该class下的native方法: <strong>sha256Encrypt</strong></p><p id="ec8b32bd-52c3-4954-931b-397295647e0a" class="">也发现 play_info的解密方法: <strong>decryptChapterContent 以及对应的 native方法 decryptStr</strong></p><h1 id="deb42ae4-a508-4fcd-8f91-4267447b7eb4" class="">IDA 分析</h1><p id="23e9a22f-9672-4206-b7a3-ce628dc7432a" class="">根据以上可以得知 so包为 <a href="http://libstupid.so">libstupid.so</a> 通过ida打开该文件，找到对应方法的位置</p><figure id="dc46bc17-2481-4979-a11b-470f46ae8ba8" class="image"><a href="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%203.png"><img style="width:707.984375px" src="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%203.png"/></a></figure><p id="f5804d6b-5843-43ec-86a9-ba0192c42a23" class="">其中即为所需方法</p><p id="052e6a36-bc8f-48c1-bdd2-a83017e4f7e1" class="">点开 sha256Encrypt 发现该方法底层就是一个 hmac_sha256 的加密方法，直接hook该方法获取key以及加密data：</p><figure id="05b15963-58fa-4756-ae4b-6c3a429becb7" class="image"><a href="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%204.png"><img style="width:707.96875px" src="ReelShort%20%E7%AE%97%E6%B3%95%E9%80%86%E5%90%91%E8%AE%B0%E5%BD%95%206339414b2032425bbab4a5becc7fb028/Untitled%204.png"/></a></figure><p id="d5c12bd4-d686-4af5-95c0-805cc648a82f" class="">frida hook脚本：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="d7aea2e1-0f9d-4019-b609-7af7814ac121" class="code"><code class="language-Bash" style="white-space:pre-wrap;word-break:break-all">
+
+(function () {
+
+    // @ts-ignore
+    function print_arg(addr) {
+        try {
+            var module = Process.findRangeByAddress(addr);
+            if (module != null) return &quot;\n&quot;+hexdump(addr) + &quot;\n&quot;;
+            return ptr(addr) + &quot;\n&quot;;
+        } catch (e) {
+            return addr + &quot;\n&quot;;
+        }
+    }
+
+    // @ts-ignore
+    function hook_native_addr(funcPtr, paramsNum) {
+        var module = Process.findModuleByAddress(funcPtr);
+        try {
+            Interceptor.attach(funcPtr, {
+                onEnter: function (args) {
+                    this.logs = &quot;&quot;;
+                    this.params = [];
+                    // @ts-ignore
+                    this.logs=this.logs.concat(&quot;So: &quot; + module.name + &quot;  Method: Java_com_newleaf_app_android_victor_util_SBUtil_decryptStr offset: &quot; + ptr(funcPtr).sub(module.base) + &quot;\n&quot;);
+                    for (let i = 0; i &lt; paramsNum; i++) {
+                        this.params.push(args[i]);
+                        this.logs=this.logs.concat(&quot;this.args&quot; + i + &quot; onEnter: &quot; + print_arg(args[i]));
+                    }
+                }, onLeave: function (retval) {
+                    for (let i = 0; i &lt; paramsNum; i++) {
+                        this.logs=this.logs.concat(&quot;this.args&quot; + i + &quot; onLeave: &quot; + print_arg(this.params[i]));
+                    }
+                    this.logs=this.logs.concat(&quot;retval onLeave: &quot; + print_arg(retval) + &quot;\n&quot;);
+                    console.log(this.logs);
+                }
+            });
+        } catch (e) {
+            console.log(e);
+        }
+    }
+    // @ts-ignore
+    hook_native_addr(Module.findBaseAddress(&quot;libstupid.so&quot;).add(0x41a59), 0x6);
+})();  // 0x41a59 为该函数地址
+</code></pre><p id="e1085134-4540-4fab-8586-ce75ca5f86c4" class="">根据打印结果，即可拿到key和msg，key是一个固定串，”<strong>F8mrVRBmPDkx5SjTLK2fvdHvxwxc8n2b</strong>”，msg由header中的关键参数同请求体中的参数，合并去除掉空值之后，通过&amp;/=的形式连接起来，类似urlencode，但是不需要转译，例：</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="a4bb829f-a30c-446d-933f-4d357abe226a" class="code"><code class="language-Plain Text" style="white-space:pre-wrap;word-break:break-all">apiVersion=1.0.1&amp;channelId=AVG10003&amp;clientVer=1.0.04&amp;devId=0010337e0f175194&amp;dev_model=ONEPLUS A6000&amp;lang=en&amp;openid=0010337e0f175194&amp;session=ff23f1f98c0c2b6069af22cdf566123e&amp;sid=0&amp;ts=1722830790&amp;uid=165167403</code></pre><p id="f361f518-831f-47dd-9dc2-d8194276322c" class="">参考上述流程，可以知道，play_info解密函数decryptStr函数底层就是使用的AES对称加密算法，将base64解密之后，结合密钥之后解密。</p><p id="7d23c61b-677f-46bf-bf1d-644cafb6ff59" class="">根据java层算法，得知解密之后还需要 使用zlib进行一次解压。</p><p id="718dc7fd-b42d-48d7-a49b-aaf71f098942" class="">python demo:</p><script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-7Z9J3l1+EYfeaPKcGXu3MS/7T+w19WtKQY/n+xzmw4hZhJ9tyYmcUS+4QqAlzhicE5LAfMQSF3iFTK9bQdTxXg==" crossorigin="anonymous" referrerPolicy="no-referrer"></script><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism.min.css" integrity="sha512-tN7Ec6zAFaVSG3TpNAKtk4DOHNpSwKHxxrsiw4GHKESGPs5njn/0sMCUMl2svV4wo4BK/rCP7juYz+zx+l6oeQ==" crossorigin="anonymous" referrerPolicy="no-referrer"/><pre id="095f69d1-ffa2-40c2-9d9e-da81abeafff3" class="code"><code class="language-Python" style="white-space:pre-wrap;word-break:break-all">import base64
+import hashlib
+import hmac
+import zlib
+from Crypto.Cipher import AES 
+
+
+def decrypt_aes(encrypted_data, aes_key, aes_iv):
+    # Base64 decode if the encrypted_data is base64 encoded
+    encrypted_data = base64.b64decode(encrypted_data)
+
+    # Initialize cipher with key and iv
+    cipher = AES.new(aes_key, AES.MODE_CBC, aes_iv)
+
+    # Decrypt data
+    decrypted_data = cipher.decrypt(encrypted_data)
+
+    # Remove padding (Assuming PKCS7 padding)
+    padding_length = decrypted_data[-1]
+    decrypted_data = decrypted_data[:-padding_length]
+
+    return decrypted_data
+
+
+def decrypt(data):
+    data = decrypt_aes(s, &quot;VvRSNGFynLBW7aCP&quot;.encode(), &quot;gLn8sxqpzyNjehDP&quot;.encode())
+    return zlib.decompress(base64.b64decode(data)).decode()
+
+
+def sign(headers, req_data_dict):
+    &quot;&quot;&quot;req sign&quot;&quot;&quot;
+    fixed_k = &quot;F8mrVRBmPDkx5SjTLK2fvdHvxwxc8n2b&quot;
+    d = {
+        k: headers[k]
+        for k in [
+            &quot;uid&quot;,
+            &quot;channelId&quot;,
+            &quot;ts&quot;,
+            &quot;apiVersion&quot;,
+            &quot;session&quot;,
+            &quot;lang&quot;,
+            &quot;devId&quot;,
+            &quot;clientVer&quot;,
+        ]
+    }
+    d.update(req_data_dict)
+    l = [(k, v) for k, v in d.items() if v]
+    l.sort(key=lambda x: x[0])
+    msg = &quot;&amp;&quot;.join([f&quot;{k}={v}&quot; for k, v in l])
+    return hmac.new(fixed_k.encode(), msg.encode(), hashlib.sha256).hexdigest()
+
+
+if __name__ == &quot;__main__&quot;:
+    s = &quot;7gX1aswMMDVCVgcdxlgyd0dxBVszfrnA+n+tWjG8eoN4PabguHVVr94XL0vCP2aNvzQ5Ab+dnG/z07Sq+df6H/i2yDb+u1c94FgL+xj5aQQgNfAIT7L4ANZ4WgW2SG7BbNnushHx/3iVEVNM3WvJ/jHJwqfoKigLb5ubbMMAJ4QBhKJ3xt3J7Tu7QbyEo2Vd8BadKCPSY5BFUl7KkYLy6hAI7iDHXY+kIWLnV6xoRYRbplC3EK6+Yo3f8/W+V6XNfttPv/q8jwuzNOWwfZzpaedrmOrohvsHQRUD/MQ0/3Wt9Pom6P65w8b43C1h5M8q&quot;
+    print(&quot;decrypt: &quot;, decrypt(s))
+    # s = &quot;eJy1jrsKwjAYhd/ln9tc2iS9jKLg4CCCk3VIk5QGegltKlTpuxsfQJwczzkfnO/2gnMn1+vlBCW03ru5rHCFH3HvZqQm+Vx76Toz+0XbMTRjX2FFZFNnNWOFqDNqGklTwwllimpJKEkq3CaCx+Ok7SCnNe406tMlhwgOgxq1CU/HAIS8dxZKzkgEO+sn6T8TJVSgXBSwRf9yY7/c2Be3QgjECg7b/Q1QaV+J&quot;
+    headers = {
+        &quot;uid&quot;: &quot;0&quot;,
+        &quot;channelId&quot;: &quot;AVG10003&quot;,
+        &quot;ts&quot;: &quot;1722494595&quot;,
+        &quot;apiVersion&quot;: &quot;1.0.1&quot;,
+        &quot;session&quot;: &quot;&quot;,
+        &quot;lang&quot;: &quot;en&quot;,
+        &quot;devId&quot;: &quot;0010337e0f175194&quot;,
+        &quot;clientVer&quot;: &quot;1.0.04&quot;,
+        &quot;sign&quot;: &quot;daa7758a74d15d3685445d2e114f1e784769b3adba049fcbdb6a92195e8abad7&quot;,
+        &quot;Content-Type&quot;: &quot;application/x-www-form-urlencoded&quot;,
+        &quot;Content-Length&quot;: &quot;74&quot;,
+        &quot;Host&quot;: &quot;v-api.stardustgod.com&quot;,
+        &quot;Connection&quot;: &quot;Keep-Alive&quot;,
+        &quot;Accept-Encoding&quot;: &quot;gzip&quot;,
+        &quot;User-Agent&quot;: &quot;okhttp/3.14.7&quot;,
+    }
+    data_d = {
+        &quot;uname&quot;: &quot;&quot;,
+        &quot;openid&quot;: &quot;0010337e0f175194&quot;,
+        &quot;pic&quot;: &quot;&quot;,
+        &quot;dev_model&quot;: &quot;ONEPLUS A6000&quot;,  # 注意空格需要保留
+        &quot;email&quot;: &quot;&quot;,
+        &quot;sid&quot;: &quot;0&quot;,
+    }
+    print(&quot;sign: &quot;, sign(headers, data_d))
+</code></pre><p id="2212ea8b-13d2-80fa-b81d-c4002dd9cd01" class=""><strong>ReelShort 算法逆向概要</strong></p><ul id="2212ea8b-13d2-80e0-a925-c38ec38d0839" class="bulleted-list"><li style="list-style-type:disc">ReelShort是知名短剧出海应用，通过逆向可获取其请求签名算法</li></ul><ul id="2212ea8b-13d2-802d-ac63-e23b08129dad" class="bulleted-list"><li style="list-style-type:disc">API请求中有两个关键加密参数：sign签名参数和play_info的base64加密串</li></ul><ul id="2212ea8b-13d2-80c5-9ad6-fd85ea8aa6f3" class="bulleted-list"><li style="list-style-type:disc">通过jadx-gui和字符串搜索&quot;sign&quot;定位到签名函数位置</li></ul><p id="2212ea8b-13d2-8068-a447-e5166dff1cbd" class=""><strong>关键加密算法</strong></p><ul id="2212ea8b-13d2-80fb-b79f-d814e350548e" class="bulleted-list"><li style="list-style-type:disc">sign签名使用的是HMAC-SHA256算法，密钥为固定字符串&quot;F8mrVRBmPDkx5SjTLK2fvdHvxwxc8n2b&quot;</li></ul><ul id="2212ea8b-13d2-80c0-afcc-ca691070edb9" class="bulleted-list"><li style="list-style-type:disc">签名内容由header和请求体中的参数合并后按key排序，通过&amp;/=连接形成</li></ul><ul id="2212ea8b-13d2-807d-83e9-f3ca5475b117" class="bulleted-list"><li style="list-style-type:disc">play_info解密使用AES对称加密算法，解密后还需进行zlib解压</li></ul><ul id="2212ea8b-13d2-8045-998a-f493d299b794" class="bulleted-list"><li style="list-style-type:disc">成功实现了Python版本的解密和签名生成函数</li></ul></div></article><span class="sans" style="font-size:14px;padding-top:2em"></span></body></html>
